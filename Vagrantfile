@@ -5,7 +5,7 @@ FileUtils.mkdir_p './modules'
 
 Vagrant.require_version '>=1.6.0'
 
-module_name = "bosun"
+module_name = "snorty"
 facts       = {
 }
 
