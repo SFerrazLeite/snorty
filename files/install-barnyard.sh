@@ -4,14 +4,6 @@ if [ -f "$FILE" ]
 then
     echo "barnyard already installed - skipping"
 else
-    apt-get install autoconf
-    apt-get install libtool
-    apt-get install libpcap0.8-dev
-    apt-get install libdumbnet-dev
-    apt-get install libdaq-dev
-    apt-get install libmysqlclient-dev
-    ln -s /usr/include/dumbnet.h /usr/include/dnet.h
-    ldconfig
     cd /usr/src
     wget https://github.com/firnsy/barnyard2/tarball/master
     tar -zxf master
@@ -21,5 +13,7 @@ else
     make
     make install
     mkdir /var/log/barnyard2
+    cd /usr/share/oinkmaster
+    bash -c "sudo ./create-sidmap.pl /etc/snort/rules > /etc/snort/sid-msg.map"
     touch "$FILE"
 fi
