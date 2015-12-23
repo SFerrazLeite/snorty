@@ -139,4 +139,24 @@ node default {
     require => File['/etc/snort/create_snort_db.sql']
   }
 
+  file { '/etc/init.d/barnyard2':
+    ensure  => 'present',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0700',
+    source  => 'puppet:///modules/snorty/barnyard2'
+  }
+
+  service { 'barnyard2':
+    ensure => running,
+    enable => true,
+    require => [
+      Exec['install-barnyard'],
+      Exec['create_snort_db'],
+      File['/etc/init.d/barnyard2'],
+      File['/etc/snort/barnyard2.conf']
+    ],
+    subscribe => File['/etc/snort/barnyard2.conf'],    
+  }
+
 }
