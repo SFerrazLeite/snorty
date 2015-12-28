@@ -10,7 +10,7 @@ facts       = {
 }
 
 ip_address  = "192.168.13.15"
-hostname    = "vagrant-snorty"
+hostname    = "snorty-service"
 
 Vagrant.configure("2") do |config|
     config.vm.box     = "ubuntu/trusty64"
@@ -30,12 +30,27 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder ".", "/vagrant", disabled: false
 
     config.vm.define :snorty do |snorty|
-        config.vm.hostname if defined? hostname
-        config.vm.network :private_network, ip: ip_address if defined? ip_address
+        snorty.vm.hostname = "snorty-service"
+        snorty.vm.network :private_network, ip: ip_address if defined? ip_address
 
-        config.vm.provision :puppet do |puppet|
+        snorty.vm.provision :puppet do |puppet|
           puppet.manifests_path = "."
-          puppet.manifest_file  = "vagrant.pp"
+          puppet.manifest_file  = "vagrant-snort.pp"
+          puppet.options        = ["--verbose", "--hiera_config=/vagrant/hiera.yaml", '--modulepath=/etc/puppet/modules:/vagrant/modules']
+          puppet.facter         = facts
+        end
+    end
+
+    config.vm.define :kibana do |kibana|
+        kibana.vm.hostname = "snorty-kibana"
+        kibana.vm.network :private_network, ip: "192.168.13.16"
+        kibana.vm.network :forwarded_port, guest: 9200, host: 9200
+        kibana.vm.network :forwarded_port, guest: 9300, host: 9300
+        kibana.vm.network :forwarded_port, guest: 5601, host: 5601
+
+        kibana.vm.provision :puppet do |puppet|
+          puppet.manifests_path = "."
+          puppet.manifest_file  = "vagrant-kibana.pp"
           puppet.options        = ["--verbose", "--hiera_config=/vagrant/hiera.yaml", '--modulepath=/etc/puppet/modules:/vagrant/modules']
           puppet.facter         = facts
         end
