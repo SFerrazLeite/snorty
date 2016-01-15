@@ -36,15 +36,6 @@ node default {
     require => File['/etc/snort/']
   }
 
-  file { '/etc/snort/snort.debian.conf':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0666',
-    source  => 'puppet:///modules/snorty/snort.debian.conf',
-    require => File['/etc/snort/']
-  }
-
   file { '/etc/snort/rules/local.rules':
     ensure  => 'present',
     owner   => 'root',
@@ -59,9 +50,24 @@ node default {
     require => [
       Exec['apt-get-update'],
       File['/etc/snort/snort.conf'],
-      File['/etc/snort/snort.debian.conf'],
       File['/etc/snort/rules/local.rules']
     ]
+  }
+
+  service { 'snort':
+    ensure => running,
+    enable => true,
+    require => Package['snort'],
+  }
+
+  file { '/etc/snort/snort.debian.conf':
+    ensure  => 'present',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0666',
+    source  => 'puppet:///modules/snorty/snort.debian.conf',
+    notify  => Service['snort'],
+    require => Package['snort']
   }
 
   file { '/etc/snort/barnyard2.conf':
