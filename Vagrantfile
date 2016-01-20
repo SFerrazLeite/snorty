@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
 
     config.vm.define :snorty do |snorty|
         snorty.vm.hostname = "snorty-service"
-        snorty.vm.network :private_network, ip: ip_address if defined? ip_address
+        snorty.vm.network :public_network, ip: ip_address if defined? ip_address
 
         snorty.vm.provision :puppet do |puppet|
           puppet.manifests_path = "."
@@ -43,7 +43,7 @@ Vagrant.configure("2") do |config|
 
     config.vm.define :kibana do |kibana|
         kibana.vm.hostname = "snorty-kibana"
-        kibana.vm.network :private_network, ip: "192.168.13.16"
+        kibana.vm.network :public_network, ip: "192.168.13.16"
         kibana.vm.network :forwarded_port, guest: 9200, host: 9200
         kibana.vm.network :forwarded_port, guest: 9300, host: 9300
         kibana.vm.network :forwarded_port, guest: 5601, host: 5601
