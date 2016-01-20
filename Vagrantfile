@@ -31,7 +31,8 @@ Vagrant.configure("2") do |config|
 
     config.vm.define :snorty do |snorty|
         snorty.vm.hostname = "snorty-service"
-        snorty.vm.network :public_network, ip: ip_address if defined? ip_address
+        config.vm.network "private_network", ip: "192.168.13.15", netmask: "255.255.0.0"
+#        snorty.vm.network :public_network, ip: ip_address if defined? ip_address
 
         snorty.vm.provision :puppet do |puppet|
           puppet.manifests_path = "."
@@ -63,5 +64,3 @@ Vagrant.configure("2") do |config|
       vbox.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     end
 end
-
-
